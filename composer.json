@@ -1,0 +1,23 @@
+{
+    "name": "unaspbr/unasp-docs-laravel",
+    "description": "Wrapper do UNASP Docs para ser usado com Laravel.",
+    "type": "library",
+    "license": "GPL-3.0-only",
+    "authors": [
+        {
+            "name": "Mateus Felipe C. C. Pinto",
+            "email": "mateusfccp@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {
+	"php": ">=7.0.33",
+        "guzzlehttp/guzzle": "~6.0"
+    },
+    "autoload": {
+	"psr-4": {
+	    "unaspbr\\": "src/"
+	}
+    }
+}
