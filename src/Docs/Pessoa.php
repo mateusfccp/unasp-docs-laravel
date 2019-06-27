@@ -120,10 +120,10 @@ class Pessoa extends Resource {
      *
      * @return unaspbr\Docs\Documento[]|null
      */
-    public static function buscarPorTipo($tipo_documento_id)
+    public function documentoPorTipo($tipo_documento_id)
     {
         // Busca por documento na API
-        $response = Request::get("documento/pessoa/{$id}", ['tipo_documento_id' => $tipo_documento_id]);
+        $response = Request::get("documento/pessoa/{$this->id}", ['tipo_documento_id' => $tipo_documento_id]);
 
         // Retorna documento se encontrou
         if ($response->status_code === 200) {
