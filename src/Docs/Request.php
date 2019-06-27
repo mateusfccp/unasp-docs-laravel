@@ -7,6 +7,19 @@ use GuzzleHttp\Client;
 class Request {
     private static $initialized = false;
     private static $client;
+    
+    public $json = null;
+
+    public function __construct($response)
+    {
+        $this->response = $response;
+        $this->status_code = $response->getStatusCode();
+        $this->body = (string) $response->getBody();
+
+        if ($response->getHeader('Content-Type')[0] === 'application/json') {
+            $this->json = json_decode((string) $response->getBody(), true, 512, JSON_THROW_ON_ERROR);
+        }
+    }
 
     /**
      * Inicializa a classe estática
@@ -20,6 +33,7 @@ class Request {
             'headers' => [
                 'API-Token' => config('unasp_docs.token'),
             ],
+            'http_errors' => false,
         ]);
 
         self::$initialized = true;
@@ -45,8 +59,8 @@ class Request {
             } else {
                 $response = self::$client->$name($arguments[0]);
             }
-
-            return json_decode((string) $response->getBody(), true, 512, JSON_THROW_ON_ERROR);
+            
+            return new Self($response);
         } else {
             self::$name($arguments);
         }

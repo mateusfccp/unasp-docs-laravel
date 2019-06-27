@@ -4,6 +4,7 @@ namespace unaspbr\Docs;
 
 use unaspbr\Docs\Exceptions\DadosObrigatoriosFaltando;
 use unaspbr\Docs\Request;
+use unaspbr\Docs\ResourceConflict;
 
 class Pessoa {
     /**
@@ -25,11 +26,12 @@ class Pessoa {
         // Envia os dados para a API
         $response = Request::post('pessoa', $dados);
 
+        if ($response->status_code === 422) {
+            throw new ResourceConflict("Já existe uma pessoa com o(s) documento(s) passado(s)!");
+        }
+        
         // Cria nova pessoa com base nos dados enviados
-        $pessoa = new Self;
-        $pessoa->update($response['data']);
-
-        return $pessoa;
+        return new Self($response->json);
     }
 
     /**
@@ -38,7 +40,7 @@ class Pessoa {
      * @param int|mixed[] $query Parâmetro de busca na API. Caso seja int, buscará por um ID correspondente.
      *                         Caso seja array, buscará por documentos correspondentes.
      *
-     * @return unaspbr\Docs\Pessoa
+     * @return unaspbr\Docs\Pessoa|null
      *
      * @throws \Exception Quando o argumento for do tipo incorreto.
      */
@@ -54,10 +56,11 @@ class Pessoa {
         }
 
         // Cria nova pessoa com base nos dados obtidos
-        $pessoa = new Self;
-        $pessoa->update($response['data']);
+        if ($response->statu_code === 200) {
+            $pessoa = new Self($response->json);
+        }
 
-        return $pessoa;
+        return null;
     }
 
     /**
@@ -80,14 +83,52 @@ class Pessoa {
     }
 
     /**
-     * Atualiza os dados da classe conforme os dados da response.
+     * Envia um documento para a API e retorna o objeto relacionado.
      *
-     * @param mixed[] $dados Dados para atualizar.
+     * @param int $tipo_documento O ID do tipo de documento.
+     *
+     * @param string $extensao A extensão do arquivo do documento.
+     *
+     * @param string $file_base64 O arquivo codificado em base64. 
+     *
+     * @return unaspbr\Docs\Pessoa
      */
-    private function update(array $dados)
+    public function enviarDocumento(int $tipo_documento, string $extensao, string $file_base64)
     {
-        foreach ($dados as $k => $v) {
-            $this->$k = $v;
+        return Documento::enviar($this->id, $tipo_documento, $extensao, $file_base64);
+    }
+
+    /**
+     * Obtém os documentos da pessoa através da API.
+     *
+     * @return unaspbr\Docs\Documento[]
+     */
+    public function documentos()
+    {
+        // Busca por documento na API
+        $response = Request::get("documento/pessoa/{$this->id}");
+
+        // Gera a lista de tipos de documento e retorna-a
+        Self::toArray($response->json);
+    }
+
+    /**
+     * Obtém o documento de uma pessoa via ID do tipo.
+     *
+     * @param int $tipo_documento_id Parâmetro de busca na API.
+     *
+     * @return unaspbr\Docs\Documento[]|null
+     */
+    public static function buscarPorTipo($tipo_documento_id)
+    {
+        // Busca por documento na API
+        $response = Request::get("documento/pessoa/{$id}", ['tipo_documento_id' => $tipo_documento_id]);
+
+        // Retorna documento se encontrou
+        if ($response->status_code === 200) {
+            return new Self($response->json);
         }
+
+        return null;
     }
 }

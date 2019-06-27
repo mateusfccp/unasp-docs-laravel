@@ -2,8 +2,9 @@
 
 namespace unaspbr\Docs;
 
-use unaspbr\Docs\Request;
 use Illuminate\Support\Facades\File;
+use unaspbr\Docs\Request;
+use unaspbr\Docs\ResourceConflict;
 
 class Documento {
     /**
@@ -30,11 +31,12 @@ class Documento {
             ],
         ]);
 
-        // Cria um novo documento com base na resposta da API
-        $documento = new Self;
-        $documento->update($response['data']);
+        if ($response->status_code === 409) {
+            throw new ResourceConflict("Já existe um documento desse tipo para essa pessoa!");
+        }
 
-        return $documento;
+        // Cria um novo documento com base na resposta da API
+        return new Self($response->json);
     }
 
     /**
@@ -42,7 +44,7 @@ class Documento {
      *
      * @param int $id Parâmetro de busca na API.
      *
-     * @return unaspbr\Docs\Documento
+     * @return unaspbr\Docs\Documento|null
      */
     public static function buscar($id)
     {
@@ -50,14 +52,15 @@ class Documento {
         $response = Request::get("documento/{$id}");
 
         // Cria nova pessoa com base nos dados obtidos
-        $documento = new Self;
-        $documento->update($response['data']);
+        if ($response->status_code === 200) {
+            return new Self($response->json);
+        }
 
-        return $documento;
+        return null;
     }
 
     /**
-     * Obtém os docuemntos de uma pessoa pessoa via ID da pessoa através da API.
+     * Obtém os documentos de uma pessoa via ID da pessoa através da API.
      *
      * @param int $id Parâmetro de busca na API.
      *
@@ -69,22 +72,6 @@ class Documento {
         $response = Request::get("documento/pessoa/{$id}");
 
         // Gera a lista de tipos de documento e retorna-a
-        return array_map(function ($item) {
-            $documento = new Self;
-            $documento->update($item);
-            return $documento;
-        }, $response['data']);
-    }
-
-    /**
-     * Atualiza os dados da classe conforme os dados da response.
-     *
-     * @param mixed[] $dados Dados para atualizar.
-     */
-    private function update(array $dados)
-    {
-        foreach ($dados as $k => $v) {
-            $this->$k = $v;
-        }
+        Self::toArray($response->json);
     }
 }
