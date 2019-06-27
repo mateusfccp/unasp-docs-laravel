@@ -16,7 +16,7 @@ class TipoDeDocumento extends Resource {
         $response = Request::get("tipos_documento");
 
         // Gera a lista de tipos de documento e retorna-a
-        Self::toArray($response->json);
+        return Self::toArray($response->json);
     }
     
     /**

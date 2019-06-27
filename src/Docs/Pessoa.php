@@ -4,9 +4,10 @@ namespace unaspbr\Docs;
 
 use unaspbr\Docs\Exceptions\DadosObrigatoriosFaltando;
 use unaspbr\Docs\Request;
+use unaspbr\Docs\Resource;
 use unaspbr\Docs\ResourceConflict;
 
-class Pessoa {
+class Pessoa extends Resource {
     /**
      * Factory para criar a pessoa através da API.
      *
@@ -56,8 +57,8 @@ class Pessoa {
         }
 
         // Cria nova pessoa com base nos dados obtidos
-        if ($response->statu_code === 200) {
-            $pessoa = new Self($response->json);
+        if ($response->status_code === 200) {
+            return new Self($response->json);
         }
 
         return null;
@@ -109,7 +110,7 @@ class Pessoa {
         $response = Request::get("documento/pessoa/{$this->id}");
 
         // Gera a lista de tipos de documento e retorna-a
-        Self::toArray($response->json);
+        return Self::toArray($response->json);
     }
 
     /**

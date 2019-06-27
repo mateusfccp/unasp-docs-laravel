@@ -1,4 +1,8 @@
+<?php
+
 namespace unaspbr\Docs;
+
+use \Exception;
 
 class Resource {
     public function __construct($data) {
@@ -22,13 +26,10 @@ class Resource {
      *
      * @return unaspbr\Docs\Resource[]
      */
-    public static function toArray($data = [])
-    {
+    public static function toArray($data = []) : array
+    {   
         return array_map(function ($item) {
-            $resource = new Self;
-            $resource->update($item);
-            
-            return $resource;
+            return new Self($item);
         }, $data);
     }
 }

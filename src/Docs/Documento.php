@@ -4,9 +4,10 @@ namespace unaspbr\Docs;
 
 use Illuminate\Support\Facades\File;
 use unaspbr\Docs\Request;
+use unaspbr\Docs\Resource;
 use unaspbr\Docs\ResourceConflict;
 
-class Documento {
+class Documento extends Resource {
     /**
      * Envia um documento para a API e retorna o objeto relacionado.
      *
@@ -72,6 +73,6 @@ class Documento {
         $response = Request::get("documento/pessoa/{$id}");
 
         // Gera a lista de tipos de documento e retorna-a
-        Self::toArray($response->json);
+        return  Self::toArray($response->json);
     }
 }
