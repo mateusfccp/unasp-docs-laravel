@@ -17,7 +17,7 @@ class Request {
         $this->body = (string) $response->getBody();
 
         if ($response->getHeader('Content-Type')[0] === 'application/json') {
-            $data = json_decode((string) $response->getBody(), true, 512, JSON_THROW_ON_ERROR);
+            $data = json_decode((string) $response->getBody(), true, 512/* , JSON_THROW_ON_ERROR */);
             $this->json = $data['data'] ?? $data;
         }
     }
