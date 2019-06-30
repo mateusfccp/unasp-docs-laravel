@@ -2,6 +2,7 @@
 
 namespace unaspbr\Docs;
 
+use unaspbr\Docs\Documento;
 use unaspbr\Docs\Exceptions\DadosObrigatoriosFaltando;
 use unaspbr\Docs\Request;
 use unaspbr\Docs\Resource;
@@ -118,7 +119,7 @@ class Pessoa extends Resource {
      *
      * @param int $tipo_documento_id Parâmetro de busca na API.
      *
-     * @return unaspbr\Docs\Documento[]|null
+     * @return unaspbr\Docs\Documento|null
      */
     public function documentoPorTipo($tipo_documento_id)
     {
@@ -127,7 +128,7 @@ class Pessoa extends Resource {
 
         // Retorna documento se encontrou
         if ($response->status_code === 200) {
-            return new Self($response->json);
+            return new Documento($response->json);
         }
 
         return null;

@@ -41,6 +41,44 @@ class Documento extends Resource {
     }
 
     /**
+     * Substitui um documento via API e retorna o objeto relacionado.
+     *
+     * @param int $id O ID do documento que será substituído.
+     *
+     * @param mixed[] Arquivos que serão enviados. Cada arquivo deve ser uma array associativa com 'extensao', com a extensão do arquivo,
+     *                e 'base64', com o arquivo codificado em Base64.
+     *
+     * @return unaspbr\Docs\Documento
+     */
+    public static function substituir(int $id, array $files)
+    {
+        // Envia os dados para a API
+        $response = Request::put("documento/{$id}", [
+            'files' => $files,
+        ]);
+
+        if ($response->status_code === 404) {
+            throw new ResourceConflict("Já existe um documento desse tipo para essa pessoa!");
+        }
+        
+        // Cria um novo documento com base na resposta da API
+        return new Self($response->json);
+    }
+
+    /**
+     * Reenvia (substitui) o documento via API e retorna o objeto relacionado.
+     *
+     * @param mixed[] Arquivos que serão enviados. Cada arquivo deve ser uma array associativa com 'extensao', com a extensão do arquivo,
+     *                e 'base64', com o arquivo codificado em Base64.
+     *
+     * @return unaspbr\Docs\Documento
+     */
+    public function reenviar(array $files)
+    {
+        return Self::substituir($this->id, $files);
+    }
+
+    /**
      * Obtém o documento via ID através da API.
      *
      * @param int $id Parâmetro de busca na API.
