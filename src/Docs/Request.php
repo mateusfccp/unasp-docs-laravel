@@ -30,7 +30,7 @@ class Request {
     private static function initialize()
     {
         self::$client =  new Client([
-            'base_uri' => 'localhost:8080/api/',
+            'base_uri' => 'https://docs.unasp.br/api/',
             'headers' => [
                 'API-Token' => config('unasp_docs.token'),
             ],
