@@ -16,13 +16,13 @@ class Pessoa extends Resource {
      *
      * @return unaspbr\Docs\Pessoa
      *
-     * @throws unaspbr\Exceptions\DadosObrigatoriosFaltando Quando não forem passados CPF ou RG.
+     * @throws unaspbr\Exceptions\DadosObrigatoriosFaltando Quando não forem passados CPF ou Passaporte.
      */
     public static function criar($dados)
     {
-        // Verifica pelo CPF ou RG
-        if (!array_key_exists('cpf', $dados) && !array_key_exists('rg', $dados)) {
-            throw new DadosObrigatoriosFaltando("É necessário passar RG ou CPF!");
+        // Verifica pelo CPF ou Passaporte
+        if (!array_key_exists('cpf', $dados) && !array_key_exists('passaporte', $dados)) {
+            throw new DadosObrigatoriosFaltando("É necessário passar CPF ou Passaporte!");
         }
 
         // Envia os dados para a API
